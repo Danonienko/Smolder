@@ -1,0 +1,4 @@
+# Copy to .dev.vars for local development and fill in the value.
+# Application public key from the Discord Developer Portal (General Information page).
+# In production, set it with: npx wrangler secret put DISCORD_PUBLIC_KEY
+DISCORD_PUBLIC_KEY=replace-with-application-public-key-hex
