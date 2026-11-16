@@ -45,6 +45,8 @@ This is a single Cloudflare Worker, currently a scaffold with no bindings config
 - Slash commands live in `src/commands/`, one module per command exporting an `ICommand` object (see `src/commands/types.ts`). `src/commands/index.ts` is the registry: to add a command, create its module and add it to `commandList`. Commands receive `{ env, ctx }` per request; don't read `env` at module scope.
 - `wrangler.jsonc` is the single source of config. It sets `main` to `src/index.ts`, observability on, and source map upload. Bindings (KV, D1, R2, Durable Objects, etc.) are commented out and must be added there.
 - Tests run inside the Workers runtime, not Node. `vitest.config.mts` uses `@cloudflare/vitest-plugin`, which points at `wrangler.jsonc`, so test bindings match the real config. `test/index.spec.ts` shows two styles: calling `worker.fetch` directly with `createExecutionContext`/`waitOnExecutionContext`, and calling through `SELF.fetch`.
+- Test layout: each command has its own spec at `test/commands/<name>.spec.ts`, and `test/commands/registry.spec.ts` covers the registry and dispatch (including unknown commands). When you add a command, add its spec alongside it.
+- `test/helpers/discord.ts` holds shared test code: `createSigner()` generates an Ed25519 keypair, returns an env with a matching `DISCORD_PUBLIC_KEY`, and signs request bodies like Discord does; `commandInteraction(name, options?)` builds an interaction body. Import these rather than copying them. The helper is not a spec file, so Vitest doesn't run it directly.
 - TypeScript: the root `tsconfig.json` covers `src/` only and excludes `test/`. `test/tsconfig.json` extends it and adds the vitest plugin types.
 
 ## Cloudflare APIs
