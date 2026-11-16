@@ -2,3 +2,10 @@
 # Application public key from the Discord Developer Portal (General Information page).
 # In production, set it with: npx wrangler secret put DISCORD_PUBLIC_KEY
 DISCORD_PUBLIC_KEY=replace-with-application-public-key-hex
+
+# Only used by `pnpm register` and `pnpm register:guild` (scripts/), which read this file via --env-file.
+# The Worker does not need them.
+DISCORD_APPLICATION_ID=replace-with-application-id
+DISCORD_TOKEN=replace-with-bot-token
+# Server (guild) id for `pnpm register:guild`. Enable Developer Mode in Discord, then right-click the server to copy its id.
+DISCORD_GUILD_ID=replace-with-guild-id

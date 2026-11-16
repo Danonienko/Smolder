@@ -8,12 +8,15 @@
 		"start": "node scripts/dev-with-tunnel.mjs",
 		"dev:local": "wrangler dev",
 		"test": "vitest",
-		"cf-typegen": "wrangler types"
+		"cf-typegen": "wrangler types",
+		"register": "tsx --env-file=.dev.vars scripts/register-commands.ts",
+		"register:guild": "tsx --env-file=.dev.vars scripts/register-guild-commands.ts"
 	},
 	"devDependencies": {
 		"@cloudflare/vitest-plugin": "^1.4.3",
 		"@types/node": "^26.6.6",
 		"discord-api-types": "^0.38.59",
+		"tsx": "^4.23.15",
 		"typescript": "^5.5.2",
 		"vitest": "~5.0.3",
 		"wrangler": "^4.162.0"
