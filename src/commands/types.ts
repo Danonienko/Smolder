@@ -15,6 +15,7 @@ import type {
 export const INTERACTION_TYPE_APPLICATION_COMMAND = 2;
 export const INTERACTION_RESPONSE_TYPE_CHANNEL_MESSAGE = 4;
 export const MESSAGE_FLAG_EPHEMERAL = 1 << 6;
+export const OPTION_TYPE_STRING = 3;
 
 /** An application command interaction (type 2) for a slash command. */
 export type ApplicationCommandInteraction = APIChatInputApplicationCommandInteraction;

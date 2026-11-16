@@ -1,6 +1,7 @@
 /**
  * Command registry. To add a command: create its module in this directory, then add it to `commandList` below.
  */
+import { echo } from './echo';
 import { ping } from './ping';
 import {
 	type ApplicationCommandInteraction,
@@ -11,7 +12,7 @@ import {
 } from './types';
 
 /** Every command the bot knows about. Also the source for registering commands with Discord. */
-export const commandList: ICommand[] = [ping];
+export const commandList: ICommand[] = [ping, echo];
 
 export const commands: Map<string, ICommand> = new Map(commandList.map((command) => [command.name, command]));
 

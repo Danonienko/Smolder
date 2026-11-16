@@ -19,7 +19,7 @@ Package manager is pnpm (lockfile: `pnpm-lock.yaml`).
 - `pnpm dev:local` — `wrangler dev` alone, without the tunnel
 - `pnpm deploy` — deploy with `wrangler deploy`
 - `pnpm test` — runs Vitest in watch mode; use `npx vitest run` for a single pass
-- `npx vitest run test/index.spec.ts` — run one test file
+- `npx vitest run test/commands/echo.spec.ts` — run one test file
 - `npx vitest run -t "responds with Hello World"` — run tests matching a name
 - `npx tsc --noEmit` — typecheck (there is no lint script)
 - `pnpm cf-typegen` — regenerate `worker-configuration.d.ts` (`wrangler types`)
