@@ -15,21 +15,34 @@ To read these docs, or any other web page, use the `web-fetch` agent (via the Ag
 
 Package manager is pnpm (lockfile: `pnpm-lock.yaml`).
 
-- `pnpm dev` / `pnpm start` — local dev server (`wrangler dev`), default http://localhost:8787
+- `pnpm dev` / `pnpm start` — runs `scripts/dev-with-tunnel.mjs`, which starts the named cloudflared tunnel and `wrangler dev` together (local server at http://localhost:8787). Ctrl+C stops both.
+- `pnpm dev:local` — `wrangler dev` alone, without the tunnel
 - `pnpm deploy` — deploy with `wrangler deploy`
 - `pnpm test` — runs Vitest in watch mode; use `npx vitest run` for a single pass
 - `npx vitest run test/index.spec.ts` — run one test file
 - `npx vitest run -t "responds with Hello World"` — run tests matching a name
 - `npx tsc --noEmit` — typecheck (there is no lint script)
 - `pnpm cf-typegen` — regenerate `worker-configuration.d.ts` (`wrangler types`)
+- `pnpm register` — register the slash commands as global commands (`scripts/register-commands.ts`); reads `DISCORD_APPLICATION_ID` and `DISCORD_TOKEN` from `.dev.vars`. Global changes can take up to an hour to appear.
+- `pnpm register:guild` — register the commands for one server (`scripts/register-guild-commands.ts`); also reads `DISCORD_GUILD_ID` from `.dev.vars`. Updates immediately, so use it while developing.
 
 Run `pnpm cf-typegen` after changing bindings in `wrangler.jsonc`; the global `Env` type comes from that generated file. Don't hand-edit it.
+
+## Tunnel (cloudflared)
+
+The dev server is exposed publicly through a named Cloudflare Tunnel called `smolder` (ID `014e6246-7c56-46dd-b216-bc652f8e3017`), routing `smolder.danonienko.dev` to `http://localhost:8787`.
+
+- Binary: `C:\Program Files (x86)\cloudflared\cloudflared.exe`, on the user PATH.
+- Config: `C:\Users\Daniel\.cloudflared\config.yml` (ingress rules), with credentials and `cert.pem` in the same folder. Never commit or print those files.
+- `pnpm dev` runs `cloudflared tunnel run smolder` alongside `wrangler dev`. The tunnel name can be overridden with the `CLOUDFLARED_TUNNEL` env var.
+- The tunnel is not installed as a Windows service, so it only runs while `pnpm dev` is running. Use `cloudflared tunnel ingress validate` to check the config after editing it.
 
 ## Architecture
 
 This is a single Cloudflare Worker, currently a scaffold with no bindings configured.
 
-- Entry point is `src/index.ts`, a default export with a `fetch` handler typed as `ExportedHandler<Env>`.
+- Entry point is `src/index.ts`, a default export with a `fetch` handler typed as `ExportedHandler<Env>`. It verifies signatures, answers PING, and passes application command interactions (type 2) to `dispatch`.
+- Slash commands live in `src/commands/`, one module per command exporting an `ICommand` object (see `src/commands/types.ts`). `src/commands/index.ts` is the registry: to add a command, create its module and add it to `commandList`. Commands receive `{ env, ctx }` per request; don't read `env` at module scope.
 - `wrangler.jsonc` is the single source of config. It sets `main` to `src/index.ts`, observability on, and source map upload. Bindings (KV, D1, R2, Durable Objects, etc.) are commented out and must be added there.
 - Tests run inside the Workers runtime, not Node. `vitest.config.mts` uses `@cloudflare/vitest-plugin`, which points at `wrangler.jsonc`, so test bindings match the real config. `test/index.spec.ts` shows two styles: calling `worker.fetch` directly with `createExecutionContext`/`waitOnExecutionContext`, and calling through `SELF.fetch`.
 - TypeScript: the root `tsconfig.json` covers `src/` only and excludes `test/`. `test/tsconfig.json` extends it and adds the vitest plugin types.
