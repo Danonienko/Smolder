@@ -4,8 +4,9 @@
 	"private": true,
 	"scripts": {
 		"deploy": "wrangler deploy",
-		"dev": "wrangler dev",
-		"start": "wrangler dev",
+		"dev": "node scripts/dev-with-tunnel.mjs",
+		"start": "node scripts/dev-with-tunnel.mjs",
+		"dev:local": "wrangler dev",
 		"test": "vitest",
 		"cf-typegen": "wrangler types"
 	},
