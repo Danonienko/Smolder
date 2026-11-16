@@ -9,6 +9,9 @@
  * https://docs.discord.com/developers/interactions/overview#preparing-for-interactions
  */
 
+import { dispatch } from './commands';
+import { type ApplicationCommandInteraction, INTERACTION_TYPE_APPLICATION_COMMAND } from './commands/types';
+
 const INTERACTION_TYPE_PING = 1;
 const INTERACTION_RESPONSE_TYPE_PONG = 1;
 
@@ -67,7 +70,11 @@ export default {
 			return Response.json({ type: INTERACTION_RESPONSE_TYPE_PONG });
 		}
 
-		// No application commands are implemented yet.
+		if (interaction.type === INTERACTION_TYPE_APPLICATION_COMMAND) {
+			return dispatch(interaction as ApplicationCommandInteraction, { env, ctx });
+		}
+
+		// Components, autocomplete and modals are not handled yet.
 		return new Response('Interaction type not implemented', { status: 501 });
 	},
 } satisfies ExportedHandler<Env>;
